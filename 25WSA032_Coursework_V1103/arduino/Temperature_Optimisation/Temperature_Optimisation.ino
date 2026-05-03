@@ -26,6 +26,12 @@ float I_Part[Samples];
 float Magnitude[Samples];
 float frequencies[Samples];
 
+void loop() {
+  Collect_Temperature_Data();
+
+  float Dominant_Freq = Apply_DFT(); 
+}
+
 float Read_Temperature() {
   int a = analogRead(PinTempSensor);
   float R = 1023.0/a -1.0;
@@ -35,7 +41,7 @@ float Read_Temperature() {
 }
 
 
-void Collect_Temperature_data(){
+void Collect_Temperature_Data(){
   Sample_Count = 0;
 
   int Sample_Delay = Active_Rate;
@@ -47,7 +53,42 @@ void Collect_Temperature_data(){
     delay(Sample_Delay);
       
     }
+  
 
   
 }
+
+float Apply_DFT() {
+  float Sampling_Freq = 1.0;
+  float Dominant Freq = 0.0;
+  float Max_Magnitude = 0.0;
+
+  for (int k = 1; k < Samples; k++) {
+    Real_Part[k] = 0.0;
+    I_Part[k] = 0.0;
+    
+
+    for (int n = 0; n < Samples; n++) {
+      float angle = 2.0 * PI * k * n / Samples;
+      Real_Part[k] += Temperature_Data[n] * cos(angle);
+      I_Part[k] -= Temperature_Data[n] * sin(angle);
+      
+    }
+
+    Magnitude[k] = sqrt((Real_Part[k] * Real_Part[k]) + (I_Part[k] * I_Part[k]));
+
+    Frequencies[k] = (k*Sampling_Freq) / Samples ;
+
+    if (Magnitude[k] > Max_Magnitude) {
+      Max_Magnitude = Magnitude[k];
+      Dominant_Freq = Frequencies[k];
+    }
+
+
+
+  }
+  return Dominant Freq; 
+}
+
+
 
