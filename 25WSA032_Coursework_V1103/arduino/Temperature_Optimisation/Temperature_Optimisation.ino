@@ -24,12 +24,14 @@ int Sample_Count = 0;
 float Real_Part[Samples];
 float I_Part[Samples];
 float Magnitude[Samples];
-float frequencies[Samples];
+float Frequencies[Samples];
 
 void loop() {
   Collect_Temperature_Data();
 
   float Dominant_Freq = Apply_DFT(); 
+
+  Send_Data_to_PC();
 }
 
 float Read_Temperature() {
@@ -42,6 +44,7 @@ float Read_Temperature() {
 
 
 void Collect_Temperature_Data(){
+  Serial.println(F("Temperature Samples: "));
   Sample_Count = 0;
 
   int Sample_Delay = Active_Rate;
@@ -60,7 +63,7 @@ void Collect_Temperature_Data(){
 
 float Apply_DFT() {
   float Sampling_Freq = 1.0;
-  float Dominant Freq = 0.0;
+  float Dominant_Freq = 0.0;
   float Max_Magnitude = 0.0;
 
   for (int k = 1; k < Samples; k++) {
@@ -87,8 +90,25 @@ float Apply_DFT() {
 
 
   }
-  return Dominant Freq; 
+  Serial.print(F("Dominant Frequency = "));
+  Serial.print(Dominant_Freq);
+  Serial.println(F(" Hz"));
+
+
+  return Dominant_Freq; 
 }
 
+void Send_Data_to_PC() {
+  Serial.println("Time, Temperature, Frequency, Magnitude");
 
+  for (int i = 1; i < Samples; i++) {
+    Serial.print(i);
+    Serial.print(", ");
+    Serial.print(Temperature_Data[i]);
+    Serial.print(", ");
+    Serial.print(Frequencies[i]);
+    Serial.print(", ");
+    Serial.println(Magnitude[i]);
+  }
+}
 

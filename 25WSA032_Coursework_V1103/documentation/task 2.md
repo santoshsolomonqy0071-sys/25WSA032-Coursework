@@ -161,7 +161,7 @@ What you must deliver for assessment of this task:
 * The file should be located in the `arduino` folder
 * Note that other sketches or documentation related to the task 2 may be placed in the `arduino` folder. These will not be be assessed but may beneficially referenced in task 1 to demonstrate your process.
 
----
+
 ## **Assessment Criteria**
 
 Task 2 is worth a total of **30** marks. This is assessed according to the following four criteria:
