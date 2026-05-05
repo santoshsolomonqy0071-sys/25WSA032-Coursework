@@ -25,6 +25,7 @@ float Real_Part[Samples];
 float I_Part[Samples];
 float Magnitude[Samples];
 float Frequencies[Samples];
+int Idle_Count = 0;
 
 void loop() {
   Collect_Temperature_Data();
@@ -32,13 +33,15 @@ void loop() {
   float Dominant_Freq = Apply_DFT(); 
 
   Send_Data_to_PC();
+
+  Decide_Power_Mode(Dominant_Freq);
 }
 
 float Read_Temperature() {
   int a = analogRead(PinTempSensor);
   float R = 1023.0/a -1.0;
   R = R0 * R;
-  float temperature = 1/(log(R/R0)/B + 1/298.15) - 273.15;
+  float temperature = 1.0/(log(R/R0)/B + 1.0/298.15) - 273.15;
   return temperature;
 }
 
@@ -53,6 +56,7 @@ void Collect_Temperature_Data(){
 
   for (int i = 0; i < Samples; i++){
     Temperature_Data[i] = Read_Temperature();
+    Serial.println(Temperature_Data[i]);
     delay(Sample_Delay);
       
     }
@@ -112,3 +116,32 @@ void Send_Data_to_PC() {
   }
 }
 
+void Decide_Power_Mode(float Dominant_Freq) {
+
+  if (Dominant_Freq > 0.5) {
+    Current_Mode = Active;
+    Idle_Count = 0;
+    Serial.println(F("Active Mode"));
+
+  } else if (Dominant_Freq > 0.1) {
+    Current_Mode = Idle;
+    Idle_Count ++;
+    Serial.println(F("Idle Mode"));
+
+  } else {
+    Idle_Count ++;
+    if (Idle_Count >= 5) {
+      Current_Mode = Power_Down;
+      Serial.println(F("Power Down Mode"));
+
+    }else {
+      Current_Mode = Idle;
+      Serial.println("Idle Mode");
+    }
+  
+  }
+
+
+
+
+}
