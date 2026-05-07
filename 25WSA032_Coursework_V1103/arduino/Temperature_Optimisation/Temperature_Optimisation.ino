@@ -26,16 +26,13 @@ float I_Part[Samples];
 float Magnitude[Samples];
 float Frequencies[Samples];
 int Idle_Count = 0;
+int Cycle_Count = 0;
+const int Cycle_Limit = 10;
+float Variation_History[Cycle_Limit]; 
 
-void loop() {
-  Collect_Temperature_Data();
 
-  float Dominant_Freq = Apply_DFT(); 
 
-  Send_Data_to_PC();
 
-  Decide_Power_Mode(Dominant_Freq);
-}
 
 float Read_Temperature() {
   int a = analogRead(PinTempSensor);
@@ -116,14 +113,68 @@ void Send_Data_to_PC() {
   }
 }
 
-void Decide_Power_Mode(float Dominant_Freq) {
 
-  if (Dominant_Freq > 0.5) {
+
+
+float Calcuate_Variation() {
+  float Total_Variation = 0.0;
+
+  for (int i = 1; i < Samples; i++) {
+    Total_Variation += abs(Temperature_Data[i] - Temperature_Data[i-1]);
+  }
+
+  Serial.print(F("Total Variation = "));
+  Serial.println(Total_Variation);
+
+  return Total_Variation;
+}
+
+float Calculate_Moving_Average() {
+  float Sum = 0.0;
+  int Count = min(Cycle_Count, Cycle_Limit);
+
+  for (int i = 0; i < Count; i++) {
+    Sum += Variation_History[i];
+
+  }
+
+  float Moving_Avg = Sum/Count;
+
+  Serial.print(F("Moving Average = "));
+  Serial.println(Moving_Avg);
+
+  return Moving_Avg;
+
+
+
+
+}
+
+int Adjust_Sampling_Rate(float Dominant_Freq) {
+  float Nyquist_Rate = 2.0 * Dominant_Freq;
+
+  if(Nyquist_Rate < 0.5) Nyquist_Rate = 0.5;
+  if(Nyquist_Rate > 4.0) Nyquist_Rate = 4.0;
+
+  int New_Delay = (int)(1000.0/Nyquist_Rate);
+
+  
+  Serial.print(F("Adjusted Sampling Rate = "));
+  Serial.print(Nyquist_Rate);
+  Serial.println(F(" Hz"));
+
+  return New_Delay;
+}
+
+void Decide_Power_Mode(float Moving_Avg) {
+
+  if (Moving_Avg > 1.0) {
     Current_Mode = Active;
     Idle_Count = 0;
     Serial.println(F("Active Mode"));
 
-  } else if (Dominant_Freq > 0.1) {
+
+  } else if (Moving_Avg > 0.5) {
     Current_Mode = Idle;
     Idle_Count ++;
     Serial.println(F("Idle Mode"));
@@ -141,7 +192,24 @@ void Decide_Power_Mode(float Dominant_Freq) {
   
   }
 
+}
+void loop() {
+  Collect_Temperature_Data();
 
+  float Dominant_Freq = Apply_DFT(); 
 
+  Send_Data_to_PC();
+
+  float Variation = Calcuate_Variation();
+
+  Variation_History[Cycle_Count % Cycle_Limit] = Variation;
+  Cycle_Count++;
+
+  float Moving_Avg = Calculate_Moving_Average();
+
+  Adjust_Sampling_Rate(Dominant_Freq);
+
+  Decide_Power_Mode(Moving_Avg);
 
 }
+
