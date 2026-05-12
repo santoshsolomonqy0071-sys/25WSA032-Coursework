@@ -11,8 +11,11 @@ from robots.ecosystem.factory import ecofactory
 # Duration is set to two weeks for development and rapid testing. Set to 52 weeks for your final tests.
 
 import matplotlib.pyplot as plt
-plt.close('all')  # optional: cleans up leftovers from prior runs
-plt.ion()         # interactive mode ON (non-blocking windows)
+
+
+if __name__ == "__main__":
+  plt.close('all')  # optional: cleans up leftovers from prior runs
+  plt.ion()         # interactive mode ON (non-blocking windows)
 
 # Create and configure the ecosystem using the factory function. 
 # Study the factory function code to understand how the ecosystem is being created 
