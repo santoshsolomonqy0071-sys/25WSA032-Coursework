@@ -12,6 +12,11 @@ from robots.ecosystem.factory import ecofactory
 
 import matplotlib.pyplot as plt
 
+min_battery = {
+    'Drone': 0.15,
+    'Droid': 0.20,
+    'Robot': 0.25
+}
 
 def hypotenuse(a, b):
   
@@ -20,6 +25,16 @@ def hypotenuse(a, b):
 
 def nearest_charger(bot, chargers):
   return min(chargers, key = lambda charger: hypotenuse(bot.coordinates, charger.coordinates))
+
+
+
+def should_charge(bot, chargers):
+  nearest = nearest_charger(bot, chargers)
+  if nearest is None:
+    return False
+  minimum_battery = min_battery[bot.kind]
+  distance = hypotenuse(bot.coordinates, nearest.coordinates)
+  return bot.soc / bot.max_soc < minimum_battery and bot.station is None and distance < 20
 
 
 
