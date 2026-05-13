@@ -38,6 +38,24 @@ def should_charge(bot, chargers):
 
 
 
+opportunistic_charging_distance = 10
+opportinistic_requirement = 0.4
+
+def opportunistic_charge(bot, chargers):
+  
+  if bot.station is not None:
+    return False
+  if bot.soc / bot.max_soc >= opportinistic_requirement:
+    return False
+  chargers_in_range = [charger for charger in chargers if hypotenuse(bot.coordinates, charger.coordinates) < opportunistic_charging_distance]
+  if chargers_in_range:
+    target_charger = min(chargers_in_range, key = lambda charger: hypotenuse(bot.coordinates, charger.coordinates))
+    bot.charge(target_charger)
+    return True 
+  return False
+
+
+
 if __name__ == "__main__":
     plt.close('all')  # optional: cleans up leftovers from prior runs
     plt.ion()         # interactive mode ON (non-blocking windows)
@@ -56,16 +74,22 @@ es.messages_on = False                                                          
 es.duration = "1 week"                                                          # We are aiming to run for a year with minimum or no bot breakages
 
 home = [40,20, 0]                                                               # Place to which bots will return when idle and from which they will start. This is also the location of the charger in this example, but it doesn't have to be. You can change this and the charger location to test the bots' ability to navigate around the ecosystem.
-charge_threshold = 0.20                                                         # this is the soc percentage at which bots will decide to charge. This can be optimised and varied for each kind (see stretch objective)                               
+                             
 
 while es.active:
 
   for bot in es.bots():
+    if should_charge(bot, es.chargers()):
+      bot.charge(nearest_charger(bot, es.chargers()))                                                       # initiate charging.
+    elif opportunistic_charge(bot, es.chargers()):
+      opportunistic_charge(bot, es.chargers())
 
+
+
+      
     #create_deliverables(es)                                                     # Use the create deliverables function to maintain a stock of ready pizzas
 
-    if bot.soc / bot.max_soc < charge_threshold and bot.station is None:        # decision to charge when percent soc = 20%. This can be optimised and varied for each kind (see stretch objective)
-      bot.charge(charger)                                                       # initiate charging.
+                                                
     if bot.activity == 'idle':                                                  # if bot is idle, contract to deliver a ready pizza.
       for pizza in es.deliverables():
         if pizza.status == 'ready':
