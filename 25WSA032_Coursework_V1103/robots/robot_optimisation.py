@@ -26,6 +26,11 @@ def hypotenuse(a, b):
 def nearest_charger(bot, chargers):
   return min(chargers, key = lambda charger: hypotenuse(bot.coordinates, charger.coordinates))
 
+def nearest_pizza(bot, pizzas):
+  available_pizzas = [pizza for pizza in pizzas if pizza.status == 'ready' and pizza.weight <= bot.max_payload]
+  if not available_pizzas:
+        return None
+  return min(available_pizzas, key = lambda pizza: hypotenuse(bot.coordinates, pizza.coordinates))
 
 
 def should_charge(bot, chargers):
@@ -63,7 +68,8 @@ if __name__ == "__main__":
 # Create and configure the ecosystem using the factory function. 
 # Study the factory function code to understand how the ecosystem is being created 
 # and configured. Adjust the parameters as needed for your testing and development.  
-es = ecofactory(robots = 3, droids = 3, drones = 3, chargers = [55,20], pizzas = 9)
+#es = ecofactory(robots = 3, droids = 3, drones = 3, chargers = [55,20], pizzas = 9)
+es = ecofactory(robots = 3, droids = 3, drones = 3, chargers=([20,10], [60, 20]), pizzas = 9, max_weight = 50)
 
 
 
@@ -86,7 +92,7 @@ while es.active:
 
 
 
-      
+
     #create_deliverables(es)                                                     # Use the create deliverables function to maintain a stock of ready pizzas
 
                                                 
@@ -98,6 +104,15 @@ while es.active:
       if not bot.destination and bot.coordinates != home:
         bot.target_destination = home                                           # if we get here, we've gone through the list of pizzas and none was ready
     if bot.target_destination:bot.move()                                        # move whilst we have a destination. At the end of delivery, the bot status will be set to idle
+
+    if bot.activity == 'idle':
+      pizza = nearest_pizza(bot, es.deliverables())
+      if pizza:
+            bot.deliver(pizza)
+      elif not bot.coordinates and bot.coordinates != home:
+            bot.target_destination = home
+
+
 
   es.update()                                                                   # update when all bots have been processed and moved
 
