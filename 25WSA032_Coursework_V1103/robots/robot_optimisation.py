@@ -12,6 +12,8 @@ from robots.ecosystem.factory import ecofactory
 
 import matplotlib.pyplot as plt
 
+# Per-bot minimum battery thresholds before charging is triggered.
+# Robots have highest threshold as they use most energy, drones lowest as they are most efficient.
 min_battery = {
     'Drone': 0.15,
     'Droid': 0.20,
@@ -19,14 +21,16 @@ min_battery = {
 }
 
 def hypotenuse(a, b):
-  
+  #returns a straight line using the pythagorean theorem
   return ((a[0]-b[0])**2 + (a[1]-b[1])**2)**0.5
 
 
 def nearest_charger(bot, chargers):
+  #Return the charger closest to the bot.Instead of always sending bots to the same fixed charger.
   return min(chargers, key = lambda charger: hypotenuse(bot.coordinates, charger.coordinates))
 
 def nearest_pizza(bot, pizzas):
+  #Return the closest available pizza that the bot can carry. 
   available_pizzas = [pizza for pizza in pizzas if pizza.status == 'ready' and pizza.weight <= bot.max_payload]
   if not available_pizzas:
         return None
@@ -34,6 +38,7 @@ def nearest_pizza(bot, pizzas):
 
 
 def should_charge(bot, chargers):
+  #determine if a bot should seek charging based on its current state and distance to the nearest charger.  
   nearest = nearest_charger(bot, chargers)
   if nearest is None:
     return False
@@ -42,12 +47,13 @@ def should_charge(bot, chargers):
   return bot.soc / bot.max_soc < minimum_battery and bot.station is None and distance < 20
 
 
-
+# Opportunistic charging constants
 opportunistic_charging_distance = 10
+# Battery must be below 40% to bother charging opportunistically
 opportinistic_requirement = 0.4
 
 def opportunistic_charge(bot, chargers):
-  
+  # If a bot is passing within range of a charger and has less than 40% battery, it should opportunistically charge even if it is not below its normal threshold. 
   if bot.station is not None:
     return False
   if bot.soc / bot.max_soc >= opportinistic_requirement:
@@ -62,6 +68,7 @@ def opportunistic_charge(bot, chargers):
 
 
 def baseline_test():
+  # This is the baseline test using the simple decision rules provided in the coursework specification.
   plt.close('all')
   plt.ion()
   es = ecofactory (robots = 3, droids = 3, drones = 3, chargers= [55,20], pizzas = 9)
@@ -100,6 +107,7 @@ def baseline_test():
 #es = ecofactory(robots = 3, droids = 3, drones = 3, chargers = [55,20], pizzas = 9)
 
 def optimisation_test():
+  # This is the optimisation test where you should implement your optimised decision rules for charging and delivering.
 
   plt.close('all')  # optional: cleans up leftovers from prior runs
   plt.ion()   
@@ -147,6 +155,7 @@ def optimisation_test():
 
 
 def print_results(baseline_es, optimisation_es):
+  # This function prints out the results of the baseline and optimisation tests, including total pizzas delivered, total weight delivered, total distance traveled, total energy consumed, number of broken bots, and overall efficiency (weight delivered per unit of energy).
 
   baseline_es.tabulate('name', 'kind', 'units_delivered', 'weight_delivered', 'distance', 'energy', 'status', kind_class = 'Bot')
   
