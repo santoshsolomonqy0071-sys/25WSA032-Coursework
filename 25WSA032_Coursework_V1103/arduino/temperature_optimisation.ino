@@ -177,6 +177,7 @@ float Calculate_Moving_Average() {
   Serial.println(Moving_Avg);
 
   return Moving_Avg;
+   
 
 
 
