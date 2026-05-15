@@ -42,3 +42,19 @@ plt.tight_layout()
 plt.savefig('frequency_vs_magnitude.png')
 plt.close()
 print("Saved Plot 2")
+
+
+
+
+plt.figure(figsize=(12, 6))
+plt.plot(Time, Temperature, color='orange', marker='o')
+plt.plot(Moving_Avg_Time, Moving_Avg, color='green', label='Moving Average')
+plt.title('Plot 3 - Smoothed Temperature vs Time')
+plt.xlabel('Time (s)')
+plt.ylabel('Temperature (deg C)')
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.savefig('smoothed_temperature_vs_time.png')
+plt.close()
+print("Saved Plot 3")
