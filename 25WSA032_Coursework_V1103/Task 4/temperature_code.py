@@ -28,3 +28,17 @@ plt.tight_layout()
 plt.savefig('temperature_vs_time.png')
 plt.close()
 print("Saved Plot 1")
+
+
+
+
+plt.figure(figsize=(12, 6))
+plt.plot(Frequency, Magnitude, color='red', marker='x')
+plt.title('Plot 2 - Frequency vs Magnitude')
+plt.xlabel('Frequency (Hz)')
+plt.ylabel('Magnitude')
+plt.grid(True)
+plt.tight_layout()
+plt.savefig('frequency_vs_magnitude.png')
+plt.close()
+print("Saved Plot 2")
