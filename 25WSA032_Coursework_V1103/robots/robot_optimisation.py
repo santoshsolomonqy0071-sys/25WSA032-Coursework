@@ -136,6 +136,9 @@ def optimisation_test():
               bot.deliver(pizza)
         elif not bot.destination and bot.coordinates != home:
               bot.target_destination = home
+      
+      if bot.target_destination:
+        bot.move()                                        # move whilst we have a destination. At the end of delivery, the bot status will be set to idle
 
 
 
@@ -168,9 +171,7 @@ def print_results(baseline_es, optimisation_es):
   print(f"Distance traveled - Baseline: {baseline_distance}, Optimisation: {optimisation_distance}, Improvement: {optimisation_distance - baseline_distance}")
   print(f"Energy consumed - Baseline: {baseline_energy}, Optimisation: {optimisation_energy}, Improvement: {optimisation_energy - baseline_energy}")
   print(f"Broken bots - Baseline: {baseline_broken}, Optimisation: {optimisation_broken}, Improvement: {optimisation_broken - baseline_broken}")
-  print(f"Efficiency -Baseline:{baseline_weight/baseline_energy}, Optimisation: {optimisation_weight/optimisation_energy}, Improvement: {(optimisation_weight/optimisation_energy) - (baseline_weight/baseline_energy)}")
-
-  
+  print(f"Efficiency - Baseline: {baseline_weight/baseline_energy if baseline_energy > 0 else 0}, Optimisation: {optimisation_weight/optimisation_energy if optimisation_energy > 0 else 0}, Improvement: {(optimisation_weight/optimisation_energy if optimisation_energy > 0 else 0) - (baseline_weight/baseline_energy if baseline_energy > 0 else 0)}")
 
 
 
