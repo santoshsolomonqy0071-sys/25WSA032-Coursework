@@ -16,3 +16,15 @@ Moving_Avg_Time = Time[window_size - 1:]
 
 Change_Rate = np.diff(Temperature) 
 Change_Rate_Time = Time[1:]
+
+
+plt.figure(figsize=(12, 6))
+plt.plot(Time, Temperature, color='blue', marker='o' )
+plt.title('Plot 1 - Temperature vs Time')
+plt.xlabel('Time (s)')
+plt.ylabel('Temperature (deg C)')
+plt.grid(True)
+plt.tight_layout()
+plt.savefig('temperature_vs_time.png')
+plt.close()
+print("Saved Plot 1")
