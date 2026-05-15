@@ -70,3 +70,18 @@ plt.tight_layout()
 plt.savefig('temperature_histogram.png')
 plt.close()
 print("Saved Plot 4")
+
+
+
+plt.figure(figsize=(12, 6))
+plt.plot(Change_Rate_Time, Change_Rate, color='brown', marker='o')
+plt.axhline(0, color='gray')
+plt.title('Plot 5 - Rate of Change of Temperature vs Time')
+plt.xlabel('Time (s)')
+plt.ylabel('Rate of Change of Temperature (deg C/s)')
+plt.grid(True)
+plt.tight_layout()  
+plt.savefig('rate_of_change_temperature_vs_time.png')
+plt.close()
+print("Saved Plot 5")
+
