@@ -61,6 +61,36 @@ def opportunistic_charge(bot, chargers):
 
 
 
+def baseline_test():
+  plt.close('all')
+  plt.ion()
+  es = ecofactory (robots = 3, droids = 3, drones = 3, chargers= ([55,20], pizzas=9) )
+  charger = es.chargers()[0]
+  es.display(show = 1, pause = 10)                                               
+  es.debug = False                                                               
+  es.messages_on = False                                                          
+  es.duration = "1 week"
+  home = [40,20, 0]
+  
+  while es.active:
+
+    for bot in es.bots():
+
+      if bot.soc / bot.max_soc < 0.20 and bot.station is None:        
+        bot.charge(charger)                                                       
+      if bot.activity == 'idle':                                                  
+        for pizza in es.deliverables():
+          if pizza.status == 'ready':
+            bot.deliver(pizza)                                                    
+            break
+        if not bot.destination and bot.coordinates != home:
+          bot.target_destination = home                                           
+      if bot.target_destination:bot.move()                                        
+
+    es.update()
+
+
+
 if __name__ == "__main__":
     plt.close('all')  # optional: cleans up leftovers from prior runs
     plt.ion()         # interactive mode ON (non-blocking windows)
@@ -69,50 +99,53 @@ if __name__ == "__main__":
 # Study the factory function code to understand how the ecosystem is being created 
 # and configured. Adjust the parameters as needed for your testing and development.  
 #es = ecofactory(robots = 3, droids = 3, drones = 3, chargers = [55,20], pizzas = 9)
-es = ecofactory(robots = 3, droids = 3, drones = 3, chargers=([20,10], [60, 20]), pizzas = 9, max_weight = 50)
+
+def optimsation_test():
+  es = ecofactory(robots = 3, droids = 3, drones = 3, chargers=([20,10], [60, 20]), pizzas = 9, max_weight = 50)
 
 
 
-charger = es.chargers()[0]
-es.display(show = 1, pause = 10)                                                # show = 0 will turn off the display and speed up the run. Set to 1 for development and debugging, set to 0 for final runs. Note that when show = 0, you will not see the ecosystem or any messages, so it is wise to turn on messages (es.messages_on = True) when show = 0 for development and debugging. 
-es.debug = False                                                                # this will directly display damage and warning messages. Note show needs to be zero  (show = 0)
-es.messages_on = False                                                          # over 52 weeks it is wise to turn messages off as there are too many. But when researching turn on for shorter runs
-es.duration = "1 week"                                                          # We are aiming to run for a year with minimum or no bot breakages
+  charger = es.chargers()[0]
+  es.display(show = 1, pause = 10)                                                # show = 0 will turn off the display and speed up the run. Set to 1 for development and debugging, set to 0 for final runs. Note that when show = 0, you will not see the ecosystem or any messages, so it is wise to turn on messages (es.messages_on = True) when show = 0 for development and debugging. 
+  es.debug = False                                                                # this will directly display damage and warning messages. Note show needs to be zero  (show = 0)
+  es.messages_on = False                                                          # over 52 weeks it is wise to turn messages off as there are too many. But when researching turn on for shorter runs
+  es.duration = "1 week"                                                          # We are aiming to run for a year with minimum or no bot breakages
 
-home = [40,20, 0]                                                               # Place to which bots will return when idle and from which they will start. This is also the location of the charger in this example, but it doesn't have to be. You can change this and the charger location to test the bots' ability to navigate around the ecosystem.
-                             
+  home = [40,20, 0]                                                               # Place to which bots will return when idle and from which they will start. This is also the location of the charger in this example, but it doesn't have to be. You can change this and the charger location to test the bots' ability to navigate around the ecosystem.
+                              
 
-while es.active:
+  while es.active:
 
-  for bot in es.bots():
-    if should_charge(bot, es.chargers()):
-      bot.charge(nearest_charger(bot, es.chargers()))                                                       # initiate charging.
-    elif opportunistic_charge(bot, es.chargers()):
-      opportunistic_charge(bot, es.chargers())
-
-
-
-
-    #create_deliverables(es)                                                     # Use the create deliverables function to maintain a stock of ready pizzas
-
-                                                
-    if bot.activity == 'idle':                                                  # if bot is idle, contract to deliver a ready pizza.
-      for pizza in es.deliverables():
-        if pizza.status == 'ready':
-          bot.deliver(pizza)                                                    # ensure we do not contract to deliver a pizza already contracted by another bot
-          break
-      if not bot.destination and bot.coordinates != home:
-        bot.target_destination = home                                           # if we get here, we've gone through the list of pizzas and none was ready
-    if bot.target_destination:bot.move()                                        # move whilst we have a destination. At the end of delivery, the bot status will be set to idle
-
-    if bot.activity == 'idle':
-      pizza = nearest_pizza(bot, es.deliverables())
-      if pizza:
-            bot.deliver(pizza)
-      elif not bot.coordinates and bot.coordinates != home:
-            bot.target_destination = home
+    for bot in es.bots():
+      if should_charge(bot, es.chargers()):
+        bot.charge(nearest_charger(bot, es.chargers()))                                                       # initiate charging.
+      elif opportunistic_charge(bot, es.chargers()):
+        opportunistic_charge(bot, es.chargers())
 
 
 
-  es.update()                                                                   # update when all bots have been processed and moved
+
+      #create_deliverables(es)                                                     # Use the create deliverables function to maintain a stock of ready pizzas
+
+                                                  
+      if bot.activity == 'idle':                                                  # if bot is idle, contract to deliver a ready pizza.
+        for pizza in es.deliverables():
+          if pizza.status == 'ready':
+            bot.deliver(pizza)                                                    # ensure we do not contract to deliver a pizza already contracted by another bot
+            break
+        if not bot.destination and bot.coordinates != home:
+          bot.target_destination = home                                           # if we get here, we've gone through the list of pizzas and none was ready
+      if bot.target_destination:bot.move()                                        # move whilst we have a destination. At the end of delivery, the bot status will be set to idle
+
+      if bot.activity == 'idle':
+        pizza = nearest_pizza(bot, es.deliverables())
+        if pizza:
+              bot.deliver(pizza)
+        elif not bot.coordinates and bot.coordinates != home:
+              bot.target_destination = home
+
+
+
+    es.update()                                                                   # update when all bots have been processed and moved
+
 
