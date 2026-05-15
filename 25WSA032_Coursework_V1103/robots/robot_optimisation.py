@@ -88,6 +88,7 @@ def baseline_test():
       if bot.target_destination:bot.move()                                        
 
     es.update()
+  return es
 
 
 
@@ -149,6 +150,7 @@ def optimsation_test():
 
 
     es.update()                                                                   # update when all bots have been processed and moved
+  return es
 
 
 def print_results(baseline_es, optimisation_es):
@@ -176,8 +178,9 @@ def print_results(baseline_es, optimisation_es):
   print(f"Distance traveled - Baseline: {baseline_distance}, Optimisation: {optimisation_distance}, Improvement: {optimisation_distance - baseline_distance}")
   print(f"Energy consumed - Baseline: {baseline_energy}, Optimisation: {optimisation_energy}, Improvement: {optimisation_energy - baseline_energy}")
   print(f"Broken bots - Baseline: {baseline_broken}, Optimisation: {optimisation_broken}, Improvement: {optimisation_broken - baseline_broken}")
-  print
+  print(f"Efficiency -Baseline:{baseline_weight/baseline_energy}, Optimisation: {optimisation_weight/optimisation_energy}, Improvement: {(optimisation_weight/optimisation_energy) - (baseline_weight/baseline_energy)}")
 
+  
 
 
 
