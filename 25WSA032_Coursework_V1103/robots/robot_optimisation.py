@@ -99,7 +99,7 @@ def baseline_test():
 # and configured. Adjust the parameters as needed for your testing and development.  
 #es = ecofactory(robots = 3, droids = 3, drones = 3, chargers = [55,20], pizzas = 9)
 
-def optimsation_test():
+def optimisation_test():
 
   plt.close('all')  # optional: cleans up leftovers from prior runs
   plt.ion()   
@@ -107,8 +107,6 @@ def optimsation_test():
   es = ecofactory(robots = 3, droids = 3, drones = 3, chargers=([20,10], [60, 20]), pizzas = 9, max_weight = 50)
 
 
-
-  charger = es.chargers()[0]
   es.display(show = 1, pause = 10)                                                # show = 0 will turn off the display and speed up the run. Set to 1 for development and debugging, set to 0 for final runs. Note that when show = 0, you will not see the ecosystem or any messages, so it is wise to turn on messages (es.messages_on = True) when show = 0 for development and debugging. 
   es.debug = False                                                                # this will directly display damage and warning messages. Note show needs to be zero  (show = 0)
   es.messages_on = False                                                          # over 52 weeks it is wise to turn messages off as there are too many. But when researching turn on for shorter runs
@@ -123,28 +121,20 @@ def optimsation_test():
       if should_charge(bot, es.chargers()):
         bot.charge(nearest_charger(bot, es.chargers()))                                                       # initiate charging.
       elif opportunistic_charge(bot, es.chargers()):
-        opportunistic_charge(bot, es.chargers())
+        pass
 
 
 
 
       #create_deliverables(es)                                                     # Use the create deliverables function to maintain a stock of ready pizzas
 
-                                                  
-      if bot.activity == 'idle':                                                  # if bot is idle, contract to deliver a ready pizza.
-        for pizza in es.deliverables():
-          if pizza.status == 'ready':
-            bot.deliver(pizza)                                                    # ensure we do not contract to deliver a pizza already contracted by another bot
-            break
-        if not bot.destination and bot.coordinates != home:
-          bot.target_destination = home                                           # if we get here, we've gone through the list of pizzas and none was ready
-      if bot.target_destination:bot.move()                                        # move whilst we have a destination. At the end of delivery, the bot status will be set to idle
+                                      
 
       if bot.activity == 'idle':
         pizza = nearest_pizza(bot, es.deliverables())
         if pizza:
               bot.deliver(pizza)
-        elif not bot.coordinates and bot.coordinates != home:
+        elif not bot.destination and bot.coordinates != home:
               bot.target_destination = home
 
 
@@ -161,15 +151,15 @@ def print_results(baseline_es, optimisation_es):
 
   baseline_units = sum(bot.units_delivered for bot in baseline_es.bots())
   baseline_weight = sum(bot.weight_delivered for bot in baseline_es.bots())
-  baseline_distance = sum(bot.distance_traveled for bot in baseline_es.bots())
-  baseline_energy = sum(bot.energy_consumed for bot in baseline_es.bots())
+  baseline_distance = sum(bot.distance for bot in baseline_es.bots())
+  baseline_energy = sum(bot.energy for bot in baseline_es.bots())
   baseline_broken = sum(1 for bot in baseline_es.bots() if bot.status == 'broken')
 
 
   optimisation_units = sum(bot.units_delivered for bot in optimisation_es.bots())
   optimisation_weight = sum(bot.weight_delivered for bot in optimisation_es.bots())
-  optimisation_distance = sum(bot.distance_traveled for bot in optimisation_es.bots())
-  optimisation_energy = sum(bot.energy_consumed for bot in optimisation_es.bots())
+  optimisation_distance = sum(bot.distance for bot in optimisation_es.bots())
+  optimisation_energy = sum(bot.energy for bot in optimisation_es.bots())
   optimisation_broken = sum(1 for bot in optimisation_es.bots() if bot.status == 'broken')
 
 
@@ -187,7 +177,7 @@ def print_results(baseline_es, optimisation_es):
 
 if __name__ == "__main__":
   baseline_es = baseline_test()
-  optimisation_es = optimsation_test()
+  optimisation_es = optimisation_test()
   print_results(baseline_es, optimisation_es)
 
   
