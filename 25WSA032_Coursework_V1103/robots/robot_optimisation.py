@@ -91,9 +91,7 @@ def baseline_test():
 
 
 
-if __name__ == "__main__":
-    plt.close('all')  # optional: cleans up leftovers from prior runs
-    plt.ion()         # interactive mode ON (non-blocking windows)
+
 
 # Create and configure the ecosystem using the factory function. 
 # Study the factory function code to understand how the ecosystem is being created 
@@ -101,6 +99,10 @@ if __name__ == "__main__":
 #es = ecofactory(robots = 3, droids = 3, drones = 3, chargers = [55,20], pizzas = 9)
 
 def optimsation_test():
+
+  plt.close('all')  # optional: cleans up leftovers from prior runs
+  plt.ion()   
+
   es = ecofactory(robots = 3, droids = 3, drones = 3, chargers=([20,10], [60, 20]), pizzas = 9, max_weight = 50)
 
 
@@ -149,3 +151,41 @@ def optimsation_test():
     es.update()                                                                   # update when all bots have been processed and moved
 
 
+def print_results(baseline_es, optimisation_es):
+
+  baseline_es.tabulate('name', 'kind', 'units_delivered', 'weight_delivered', 'distance', 'energy', 'status', kind_class = 'Bot')
+  
+  optimisation_es.tabulate('name', 'kind', 'units_delivered', 'weight_delivered', 'distance', 'energy', 'status', kind_class = 'Bot')
+
+  baseline_units = sum(bot.units_delivered for bot in baseline_es.bots())
+  baseline_weight = sum(bot.weight_delivered for bot in baseline_es.bots())
+  baseline_distance = sum(bot.distance_traveled for bot in baseline_es.bots())
+  baseline_energy = sum(bot.energy_consumed for bot in baseline_es.bots())
+  baseline_broken = sum(1 for bot in baseline_es.bots() if bot.status == 'broken')
+
+
+  optimisation_units = sum(bot.units_delivered for bot in optimisation_es.bots())
+  optimisation_weight = sum(bot.weight_delivered for bot in optimisation_es.bots())
+  optimisation_distance = sum(bot.distance_traveled for bot in optimisation_es.bots())
+  optimisation_energy = sum(bot.energy_consumed for bot in optimisation_es.bots())
+  optimisation_broken = sum(1 for bot in optimisation_es.bots() if bot.status == 'broken')
+
+
+  print(f"Pizzas delivered - Baseline: {baseline_units}, Optimisation: {optimisation_units}, Improvement: {optimisation_units - baseline_units}")
+  print(f"Weight delivered - Baseline: {baseline_weight}, Optimisation: {optimisation_weight}, Improvement: {optimisation_weight - baseline_weight}")
+  print(f"Distance traveled - Baseline: {baseline_distance}, Optimisation: {optimisation_distance}, Improvement: {optimisation_distance - baseline_distance}")
+  print(f"Energy consumed - Baseline: {baseline_energy}, Optimisation: {optimisation_energy}, Improvement: {optimisation_energy - baseline_energy}")
+  print(f"Broken bots - Baseline: {baseline_broken}, Optimisation: {optimisation_broken}, Improvement: {optimisation_broken - baseline_broken}")
+  print
+
+
+
+
+
+if __name__ == "__main__":
+  baseline_es = baseline_test()
+  optimisation_es = optimsation_test()
+  print_results(baseline_es, optimisation_es)
+
+  
+  
