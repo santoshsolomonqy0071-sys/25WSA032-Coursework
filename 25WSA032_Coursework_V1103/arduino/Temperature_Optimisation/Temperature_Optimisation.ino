@@ -207,7 +207,7 @@ void loop() {
 
   float Moving_Avg = Calculate_Moving_Average();
 
-  Adjust_Sampling_Rate(Dominant_Freq);
+  int Current_Delay = Adjust_Sampling_Rate(Dominant_Freq);
 
   Decide_Power_Mode(Moving_Avg);
 
