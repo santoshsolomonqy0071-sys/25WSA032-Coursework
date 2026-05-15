@@ -64,8 +64,8 @@ def opportunistic_charge(bot, chargers):
 def baseline_test():
   plt.close('all')
   plt.ion()
-  es = ecofactory (robots = 3, droids = 3, drones = 3, chargers= ([55,20], pizzas=9) )
-  charger = es.chargers()[0]
+  es = ecofactory (robots = 3, droids = 3, drones = 3, chargers= [55,20], pizzas = 9)
+  charger = es.chargers()[0] 
   es.display(show = 1, pause = 10)                                               
   es.debug = False                                                               
   es.messages_on = False                                                          
